@@ -14,7 +14,7 @@ namespace ProductsAPI.Controllers
         private readonly ProductsContext _context;
 
         public ProductsController(ProductsContext context)
-        { 
+        {
             _context = context;
         }
 
@@ -22,11 +22,11 @@ namespace ProductsAPI.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _context.Products
-                .Where(i=>i.IsActive)
-                .Select(p=> ProductToDto(p))
+                .Where(i => i.IsActive)
+                .Select(p => ProductToDto(p))
                 .ToListAsync();
 
-            return Ok( products );
+            return Ok(products);
         }
 
         [Authorize]
@@ -38,12 +38,12 @@ namespace ProductsAPI.Controllers
                 return NotFound();
             }
             var p = await _context.Products.Where(i => i.ProductId == id)
-                .Select(p=> ProductToDto(p))
+                .Select(p => ProductToDto(p))
                 .FirstOrDefaultAsync();
 
             if (p == null)
             {
-                return NotFound ();
+                return NotFound();
             }
 
             return Ok(p);
@@ -55,26 +55,26 @@ namespace ProductsAPI.Controllers
             _context.Products.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProducts), new {id=entity.ProductId},entity);
+            return CreatedAtAction(nameof(GetProducts), new { id = entity.ProductId }, entity);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(int id, Product entity)
         {
-            if (id!=entity.ProductId)
+            if (id != entity.ProductId)
             {
                 return BadRequest();
             }
 
             var product = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
-            if (product==null)
+            if (product == null)
             {
                 return NotFound();
             }
 
             product.ProductName = entity.ProductName;
-            product.Price=entity.Price;
-            product.IsActive=entity.IsActive;
+            product.Price = entity.Price;
+            product.IsActive = entity.IsActive;
 
             try
             {
@@ -91,7 +91,7 @@ namespace ProductsAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (id==null)
+            if (id == null)
             {
                 return BadRequest();
             }
@@ -117,8 +117,8 @@ namespace ProductsAPI.Controllers
             var entity = new ProductDTO();
             if (p != null)
             {
-                entity.ProductId=p.ProductId;
-                entity.ProductName=p.ProductName;
+                entity.ProductId = p.ProductId;
+                entity.ProductName = p.ProductName;
                 entity.Price = p.Price;
             }
             return entity;

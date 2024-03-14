@@ -3,12 +3,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ProductsAPI.Models;
 using System.Text;
 
+var MyAllowSpecificOriginS = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(MyAllowSpecificOriginS, policy =>
+    {
+        policy.WithOrigins("localhost")
+        .AllowAnyHeader()
+        .AllowAnyMethod();
+    });
+});
 
 // Add services to the container.
 builder.Services.AddDbContext<ProductsContext>(x=>x.UseSqlServer("Server=.\\SQLEXPRESS;Database=productsDb;User Id=sa;Password=1234;TrustServerCertificate=True"));
@@ -90,7 +104,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
-
+app.UseRouting();
+app.UseCors(MyAllowSpecificOriginS);
 app.UseAuthorization();
 
 app.MapControllers();
